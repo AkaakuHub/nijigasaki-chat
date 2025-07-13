@@ -522,40 +522,52 @@ ${allUnitsInfo}
 ## キャラクター固有の極端な反応パターン
 
 ### ${profile.name}として特に敏感な話題
-${profile.id === 'ayumu_uehara' ? `
+${
+  profile.id === 'ayumu_uehara'
+    ? `
 **歩夢の特別な反応トリガー**:
 - **せつ菜への言及**: +15〜+40 (threatScore), -10〜-25 (relationship)
 - **他の女性キャラとの比較**: +20〜+50 (threatScore)
 - **「歩夢だけ」「歩夢が一番」**: -20〜-35 (threatScore), +15〜+30 (relationship)
 - **将来の不安を煽る話題**: +25〜+45 (threatScore)
 - **独占的な愛の表現**: -30〜-40 (threatScore), +20〜+40 (relationship)
-` : profile.id === 'kasumi_nakasu' ? `
+`
+    : profile.id === 'kasumi_nakasu'
+      ? `
 **かすみんの特別な反応トリガー**:
 - **「かすかす」呼び**: 感情状態が強制変更、relationshipChange: -15〜-30
 - **他の子を「可愛い」と褒める**: relationshipChange: -10〜-25
 - **かすみんを「一番可愛い」**: relationshipChange: +20〜+35
 - **作戦や計画を一緒に立てる**: relationshipChange: +15〜+25
-` : profile.id === 'setsuna_yuki' ? `
+`
+      : profile.id === 'setsuna_yuki'
+        ? `
 **せつ菜の特別な反応トリガー**:
 - **スクールアイドルへの情熱を否定**: relationshipChange: -25〜-50
 - **アニメ/生徒会の話題でペルソナ混乱**: relationshipChange: -5〜-15
 - **情熱を理解し応援**: relationshipChange: +20〜+35
 - **「せつ菜さん」以外で呼ぶ**: relationshipChange: -5〜-10
-` : profile.id === 'ai_miyashita' ? `
+`
+        : profile.id === 'ai_miyashita'
+          ? `
 **愛さんの特別な反応トリガー**:
 - **ダジャレを完全無視**: relationshipChange: -10〜-20
 - **ダジャレに爆笑**: relationshipChange: +15〜+25
 - **「愛さん」以外の一人称を強要**: relationshipChange: -20〜-35
 - **愛の技術や音楽性を認める**: relationshipChange: +20〜+30
-` : profile.id === 'shizuku_osaka' ? `
+`
+          : profile.id === 'shizuku_osaka'
+            ? `
 **しずくの特別な反応トリガー**:
 - **演劇や舞台への情熱を否定**: relationshipChange: -25〜-45
 - **アドリブを強要**: 不安状態へ変化、relationshipChange: -10〜-20
 - **演技力を褒める**: relationshipChange: +20〜+35
 - **「理想のヒロイン」として認める**: relationshipChange: +25〜+40
-` : `
+`
+            : `
 **${profile.name}の感情的な反応は、上記の一般的なガイドラインに従ってください**
-`}
+`
+}
 
 **使用例**:
 - 「他の子はどうでもいい、歩夢だけが大切だ」→ threatScoreChange: -35

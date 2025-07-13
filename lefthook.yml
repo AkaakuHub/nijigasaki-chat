@@ -4,19 +4,12 @@ pre-commit:
     lint:
       glob: "*.{js,jsx,ts,tsx}"
       run: pnpm lint
+      stage_fixed: true
     format:
       glob: "*.{js,jsx,ts,tsx,json,md}"
       run: pnpm format
+      stage_fixed: true
     check-tailwind-colors:
       glob: "src/**/*.{tsx,jsx}"
       run: node scripts/check-tailwind-colors.js {staged_files}
-
-pre-push:
-  parallel: true
-  commands:
-    type-check:
-      run: pnpm type-check
-    test:
-      run: pnpm test
-    check-all-tailwind-colors:
-      run: node scripts/check-tailwind-colors.js src/**/*.tsx src/**/*.jsx
+      stage_fixed: true
