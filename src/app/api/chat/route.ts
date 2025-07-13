@@ -82,9 +82,24 @@ export async function POST(request: NextRequest) {
     const prompt = generatePrompt(profile, gameState, message);
 
     // Gemini APIを呼び出し
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
+    let responseText: string;
+    try {
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+      const result = await model.generateContent(prompt);
+      responseText = result.response.text();
+    } catch (error: unknown) {
+      // 429エラー（クォータ超過）の場合、システムメッセージを返す
+      if (error && typeof error === 'object' && 'status' in error && error.status === 429) {
+        return NextResponse.json(
+          {
+            error:
+              'API使用制限に達しました。しばらく待ってから再度お試しください。',
+          },
+          { status: 429 }
+        );
+      }
+      throw error;
+    }
 
     // JSONレスポンスを抽出
     const jsonMatch = responseText.match(/```json\n([\s\S]*?)\n```/);

@@ -148,13 +148,6 @@ export default function CharacterSelector() {
 
   return (
     <>
-      {/* 背景オーバーレイ（展開時のみ） */}
-      {isExpanded && (
-        <div
-          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
-          onClick={() => setIsExpanded(false)}
-        />
-      )}
 
       {/* 右上のトリガーボタン */}
       <div className="fixed top-4 right-4 z-50">
@@ -183,9 +176,12 @@ export default function CharacterSelector() {
 
       {/* 展開時の輪状配置 */}
       {isExpanded && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
+        <div 
+          className="fixed inset-0 flex items-center justify-center z-50 bg-background/80 backdrop-blur-sm"
+          onClick={() => setIsExpanded(false)}
+        >
           {/* キャラクター輪（真の中央配置） */}
-          <div className="relative">
+          <div className="relative" onClick={(e) => e.stopPropagation()}>
             {otherCharacters.map((character, index) => {
               const angle = (index * 360) / otherCharacters.length;
               const radius = 140; // 輪を少し大きく

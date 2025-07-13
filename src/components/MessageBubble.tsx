@@ -12,6 +12,17 @@ export default function MessageBubble({
   characterName,
 }: MessageBubbleProps) {
   const isUser = message.sender === 'user';
+  const isSystem = message.sender === 'system';
+
+  if (isSystem) {
+    return (
+      <div className="flex justify-center mb-4">
+        <div className="bg-system-notification border border-system-notification-border text-system-notification-foreground px-4 py-2 rounded-lg text-sm max-w-[80%] text-center">
+          {message.text}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>

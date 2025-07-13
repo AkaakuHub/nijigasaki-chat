@@ -78,6 +78,18 @@ export default function ChatWindow() {
       });
 
       if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        if (response.status === 429 && errorData.error) {
+          // 429エラーの場合、システム通知として表示
+          const systemMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            text: `【システム】${errorData.error}`,
+            sender: 'system',
+            timestamp: Date.now(),
+          };
+          addMessage(systemMessage);
+          return;
+        }
         throw new Error('Failed to get response');
       }
 
