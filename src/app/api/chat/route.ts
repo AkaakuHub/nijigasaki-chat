@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
       passionTriggered?: boolean;
       anxiousTriggered?: boolean;
     } = {
-      ...aiResponse,
+      ...(aiResponse as ApiResponse),
     };
 
     if (characterId === 'ayumu_uehara') {
