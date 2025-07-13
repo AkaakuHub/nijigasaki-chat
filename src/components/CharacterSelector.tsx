@@ -148,7 +148,6 @@ export default function CharacterSelector() {
 
   return (
     <>
-
       {/* 右上のトリガーボタン */}
       <div className="fixed top-4 right-4 z-50">
         <button
@@ -176,12 +175,12 @@ export default function CharacterSelector() {
 
       {/* 展開時の輪状配置 */}
       {isExpanded && (
-        <div 
+        <div
           className="fixed inset-0 flex items-center justify-center z-50 bg-background/80 backdrop-blur-sm"
           onClick={() => setIsExpanded(false)}
         >
           {/* キャラクター輪（真の中央配置） */}
-          <div className="relative" onClick={(e) => e.stopPropagation()}>
+          <div className="relative" onClick={e => e.stopPropagation()}>
             {otherCharacters.map((character, index) => {
               const angle = (index * 360) / otherCharacters.length;
               const radius = 140; // 輪を少し大きく

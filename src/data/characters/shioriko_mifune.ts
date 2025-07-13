@@ -162,6 +162,13 @@ export const shiorikoProfile: CharacterProfile = {
       callSign: 'テイラーさん',
       description: 'その若さで世界レベルの才能を持つ、末恐ろしい方です。',
     },
+    {
+      characterId: 'kaoruko_mifune',
+      name: '三船薫子',
+      callSign: 'お姉さま',
+      description:
+        '憧れの姉。スクールアイドルとしての先輩であり、わたくしの成長の道標となってくださった方です。',
+    },
   ],
   specialSystem: {
     type: 'growth_reflection',

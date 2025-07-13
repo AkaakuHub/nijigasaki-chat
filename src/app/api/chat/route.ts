@@ -89,7 +89,12 @@ export async function POST(request: NextRequest) {
       responseText = result.response.text();
     } catch (error: unknown) {
       // 429エラー（クォータ超過）の場合、システムメッセージを返す
-      if (error && typeof error === 'object' && 'status' in error && error.status === 429) {
+      if (
+        error &&
+        typeof error === 'object' &&
+        'status' in error &&
+        error.status === 429
+      ) {
         return NextResponse.json(
           {
             error:

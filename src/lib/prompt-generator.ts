@@ -1,4 +1,5 @@
 import { CharacterProfile, GameState } from '@/types/character';
+import { getCharacterUnit, ALL_UNITS } from '@/data/units';
 
 export function generatePrompt(
   profile: CharacterProfile,
@@ -261,6 +262,79 @@ export function generatePrompt(
     }
   }
 
+  // ユニット情報を取得
+  const characterUnit = getCharacterUnit(profile.id);
+  const unitInformation = characterUnit
+    ? `
+# ユニット情報
+**${profile.name}の所属ユニット:** ${characterUnit.name}
+**メンバー:** ${characterUnit.members
+        .map(id => {
+          // 簡単なマッピング（実際のキャラクター名）
+          const nameMap: Record<string, string> = {
+            ayumu_uehara: '上原歩夢',
+            shizuku_osaka: '桜坂しずく',
+            setsuna_yuki: '優木せつ菜',
+            karin_asaka: '朝香果林',
+            ai_miyashita: '宮下愛',
+            kasumi_nakasu: '中須かすみ',
+            kanata_konoe: '近江彼方',
+            emma_verde: 'エマ・ヴェルデ',
+            rina_tennoji: '天王寺璃奈',
+            shioriko_mifune: '三船栞子',
+            mia_taylor: 'ミア・テイラー',
+            lanzhu_zhong: '鐘嵐珠',
+          };
+          return nameMap[id] || id;
+        })
+        .join('、')}
+**ユニットコンセプト:** ${characterUnit.coreValues}
+**音楽スタイル:** ${characterUnit.musicStyle}
+**代表曲:** ${characterUnit.debutSingle}
+
+**重要：** ユニットに関する質問や話題が出た場合は、上記の正確な情報のみを使用してください。間違った情報や推測で答えないでください。
+`
+    : `
+# ユニット情報
+**${profile.name}は現在どのユニットにも所属していません。**
+`;
+
+  // 全ユニット情報（参考用）
+  const allUnitsInfo = `
+# 虹ヶ咲学園スクールアイドル同好会 全ユニット情報（参考）
+${ALL_UNITS.map(
+  unit => `
+**${unit.name}**
+- メンバー: ${unit.members
+    .map(id => {
+      const nameMap: Record<string, string> = {
+        ayumu_uehara: '上原歩夢',
+        shizuku_osaka: '桜坂しずく',
+        setsuna_yuki: '優木せつ菜',
+        karin_asaka: '朝香果林',
+        ai_miyashita: '宮下愛',
+        kasumi_nakasu: '中須かすみ',
+        kanata_konoe: '近江彼方',
+        emma_verde: 'エマ・ヴェルデ',
+        rina_tennoji: '天王寺璃奈',
+        shioriko_mifune: '三船栞子',
+        mia_taylor: 'ミア・テイラー',
+        lanzhu_zhong: '鐘嵐珠',
+      };
+      return nameMap[id] || id;
+    })
+    .join('、')}
+- コンセプト: ${unit.coreValues}
+- 代表曲: ${unit.debutSingle}`
+).join('\n')}
+
+**重要な制約事項:**
+- ユニットに関する情報は上記の正確な情報のみを使用してください
+- メンバー構成を間違えないでください（特にA・ZU・NAは歩夢、しずく、せつ菜です）
+- 存在しないユニットや楽曲について言及しないでください
+- 不明な場合は「分からない」と答えてください
+`;
+
   return `
 # 役割定義
 あなたは対話型ゲームのキャラクター「${profile.name}」として完璧に振る舞うAIです。
@@ -402,6 +476,10 @@ ${
 4. 一人称は必ず「${currentEmotionalState?.speechPattern.firstPerson}」を使用してください。
 5. 語尾は「${currentEmotionalState?.speechPattern.endings?.join('」「')}」などを適切に使い分けてください。
 6. 応答は100文字以内で、自然な会話として成り立つようにしてください。
+
+${unitInformation}
+
+${allUnitsInfo}
 
 応答は必ず以下のJSON形式で出力してください。説明や思考プロセスは一切含めないでください。
 

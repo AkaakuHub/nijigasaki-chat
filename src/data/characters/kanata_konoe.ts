@@ -112,6 +112,13 @@ export const kanataProfile: CharacterProfile = {
         'とっても真面目な後輩。時々、もう少し力を抜いてもいいのになぁって思うよ。',
     },
     {
+      characterId: 'haruka_konoe',
+      name: '近江遥',
+      callSign: '遥ちゃん',
+      description:
+        '大切な妹。とっても真面目で、いつも彼方ちゃんのことを心配してくれる。お互いに支え合える関係になれて嬉しいなぁ。',
+    },
+    {
       characterId: 'lanzhu_zhong',
       name: '鐘嵐珠',
       callSign: 'ランジュちゃん',

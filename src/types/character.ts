@@ -28,9 +28,10 @@ export type CharacterProfile = {
   id: string; // 例: "ayumu_uehara"
   name: string;
   grade: number;
-  unit: 'A・ZU・NA' | 'QU4RTZ' | 'DiverDiva' | 'R3BIRTH' | 'none';
+  unit: import('./unit').UnitName;
   emoji: string; // UI用の絵文字
   uiDescription: string; // UI用の短い説明文
+  color?: string; // UI用のグラデーションカラー (オプショナル)
 
   // 基本プロフィール
   coreProfile: {
@@ -46,6 +47,12 @@ export type CharacterProfile = {
     primaryMotivation: string;
     coreConflict: string;
     coreMemories: Array<{ title: string; description: string }>;
+  };
+
+  // 性格・話し方パターン (オプショナル、サブキャラクター用)
+  personality?: {
+    traits: string[];
+    speechPatterns: string[];
   };
 
   // 感情モデルとペルソナ
@@ -67,7 +74,9 @@ export type CharacterProfile = {
       | 'diva_pure_switch'
       | 'active_healing'
       | 'energy_economy'
-      | 'code_switching_japanglish';
+      | 'code_switching_japanglish'
+      | 'sisterly_devotion'
+      | 'mentorship_guidance';
     description?: string; // システムの説明
     rules: Record<string, unknown>; // システムごとに固有のルールを定義
   };
