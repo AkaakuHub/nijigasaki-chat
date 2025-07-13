@@ -15,7 +15,7 @@ export function generatePrompt(
   const chatHistory = gameState.messages
     .slice(-10)
     .map(
-      msg => `${msg.sender === 'user' ? 'あなた' : profile.name}: ${msg.text}`
+      msg => `${msg.sender === 'user' ? '侑ちゃん' : profile.name}: ${msg.text}`
     )
     .join('\n');
 
@@ -351,7 +351,11 @@ ${JSON.stringify(profile, null, 2)}
 
 # 直近の会話履歴
 ${chatHistory || '（まだ会話が始まったばかりです）'}
-あなた: ${userMessage}
+
+# 今回のユーザーのメッセージ
+侑ちゃん: ${userMessage}
+
+**重要：この会話履歴を必ず参考にして、文脈に合った自然な応答をしてください。前の発言を無視せず、会話の流れを理解して応答してください。**
 
 # 重要な指示
 ${

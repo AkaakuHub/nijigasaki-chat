@@ -27,11 +27,27 @@ export default function GameStateNotification({
       newNotificationType = 'over';
     }
 
+    console.log('GameStateNotification Debug:', {
+      relationshipLevel,
+      newNotificationType,
+      currentNotificationType: notificationType,
+      shouldUpdate:
+        newNotificationType && newNotificationType !== notificationType,
+    });
+
     if (newNotificationType && newNotificationType !== notificationType) {
+      console.log('通知タイプを設定:', newNotificationType);
       setNotificationType(newNotificationType);
       setIsVisible(true);
     }
-  }, [relationshipLevel, notificationType]);
+  }, [relationshipLevel]);
+
+  // コンポーネントがマウントされた時に即座に表示開始
+  useEffect(() => {
+    if (notificationType) {
+      setIsVisible(true);
+    }
+  }, [notificationType]);
 
   const handleClose = () => {
     setIsVisible(false);

@@ -27,6 +27,7 @@ export default function ChatWindow() {
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [gameStateVisible, setGameStateVisible] = useState(false);
+  const [notificationRelationship, setNotificationRelationship] = useState(50);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -110,16 +111,35 @@ export default function ChatWindow() {
       addMessage(characterMessage);
 
       // 関係性パラメータを更新
+      let updatedRelationship = currentCharacterState.relationshipLevel || 50;
       if (data.relationshipChange) {
         updateRelationshipLevel(currentCharacterId, data.relationshipChange);
-        const newRelationship =
-          (currentCharacterState.relationshipLevel || 50) +
-          data.relationshipChange;
+        updatedRelationship = Math.max(
+          0,
+          Math.min(100, updatedRelationship + data.relationshipChange)
+        );
+      }
 
-        // ゲーム状態通知の表示判定
-        if (newRelationship <= 0 || newRelationship >= 100) {
-          setGameStateVisible(true);
-        }
+      console.log('Debug - 親密度チェック:', {
+        originalRelationship: currentCharacterState.relationshipLevel,
+        relationshipChange: data.relationshipChange,
+        updatedRelationship,
+        currentRelationship,
+        gameStateVisible,
+        shouldShow: updatedRelationship <= 0 || updatedRelationship >= 100,
+      });
+
+      // ゲーム状態通知の表示判定（更新後の値を使用）
+      if (
+        (updatedRelationship <= 0 || updatedRelationship >= 100) &&
+        !gameStateVisible
+      ) {
+        console.log(
+          'ゲーム状態通知を表示します - 親密度:',
+          updatedRelationship
+        );
+        setNotificationRelationship(updatedRelationship);
+        setGameStateVisible(true);
       }
 
       // 脅威スコアを更新（全キャラクター対応）
@@ -342,11 +362,23 @@ export default function ChatWindow() {
       </div>
 
       {/* ゲーム状態通知 */}
+      {(() => {
+        console.log(
+          'ChatWindow - gameStateVisible:',
+          gameStateVisible,
+          'currentRelationship:',
+          currentRelationship
+        );
+        return null;
+      })()}
       {gameStateVisible && (
         <GameStateNotification
-          relationshipLevel={currentRelationship}
+          relationshipLevel={notificationRelationship}
           characterName={characterNames[currentCharacterId] || 'Unknown'}
-          onClose={() => setGameStateVisible(false)}
+          onClose={() => {
+            console.log('ゲーム状態通知を閉じます');
+            setGameStateVisible(false);
+          }}
         />
       )}
 
