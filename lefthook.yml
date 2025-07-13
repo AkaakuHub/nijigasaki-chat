@@ -1,0 +1,22 @@
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: "*.{js,jsx,ts,tsx}"
+      run: pnpm lint
+    format:
+      glob: "*.{js,jsx,ts,tsx,json,md}"
+      run: pnpm format
+    check-tailwind-colors:
+      glob: "src/**/*.{tsx,jsx}"
+      run: node scripts/check-tailwind-colors.js {staged_files}
+
+pre-push:
+  parallel: true
+  commands:
+    type-check:
+      run: pnpm type-check
+    test:
+      run: pnpm test
+    check-all-tailwind-colors:
+      run: node scripts/check-tailwind-colors.js src/**/*.tsx src/**/*.jsx

@@ -1,16 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { generatePrompt, calculateThreatScoreDelta, detectPersonaSwitch, shouldGeneratePun } from '@/lib/prompt-generator';
+import {
+  generatePrompt,
+  calculateThreatScoreDelta,
+  detectPersonaSwitch,
+  shouldGeneratePun,
+} from '@/lib/prompt-generator';
 import { GameState, ApiResponse } from '@/types/character';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, gameState }: { message: string; gameState: GameState } = await request.json();
+    const { message, gameState }: { message: string; gameState: GameState } =
+      await request.json();
 
     if (!message || !gameState) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
     }
 
     // キャラクタープロファイルを取得
@@ -18,11 +27,14 @@ export async function POST(request: NextRequest) {
     const profileResponse = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/characters/${characterId}`
     );
-    
+
     if (!profileResponse.ok) {
-      return NextResponse.json({ error: 'Character not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Character not found' },
+        { status: 404 }
+      );
     }
-    
+
     const profile = await profileResponse.json();
 
     // 脅威スコアの変動を計算（歩夢の場合のみ）
@@ -54,12 +66,16 @@ export async function POST(request: NextRequest) {
     let passionTriggered = false;
     let anxiousTriggered = false;
     if (profile.specialSystem?.type === 'passion_trigger') {
-      const rules = profile.specialSystem.rules as { 
-        passionTriggers: string[]; 
-        anxiousTriggers: string[] 
+      const rules = profile.specialSystem.rules as {
+        passionTriggers: string[];
+        anxiousTriggers: string[];
       };
-      passionTriggered = rules.passionTriggers.some(trigger => message.includes(trigger));
-      anxiousTriggered = rules.anxiousTriggers.some(trigger => message.includes(trigger));
+      passionTriggered = rules.passionTriggers.some(trigger =>
+        message.includes(trigger)
+      );
+      anxiousTriggered = rules.anxiousTriggers.some(trigger =>
+        message.includes(trigger)
+      );
     }
 
     // プロンプトを生成
@@ -77,17 +93,17 @@ export async function POST(request: NextRequest) {
     }
 
     // JSONを清潔化
-    let cleanJson = jsonMatch[1]
-      .replace(/": \+(\d+)/g, '": $1')     // +記号を削除
-      .replace(/": -(\d+)/g, '": -$1')     // -記号は保持
-      .replace(/,\s*}/g, '}')              // 末尾のカンマを削除
-      .replace(/,\s*]/g, ']')              // 配列末尾のカンマを削除
+    const cleanJson = jsonMatch[1]
+      .replace(/": \+(\d+)/g, '": $1') // +記号を削除
+      .replace(/": -(\d+)/g, '": -$1') // -記号は保持
+      .replace(/,\s*}/g, '}') // 末尾のカンマを削除
+      .replace(/,\s*]/g, ']') // 配列末尾のカンマを削除
       .replace(/[\u0000-\u001F\u007F-\u009F]/g, '') // 制御文字を削除
-      .replace(/　/g, ' ')                 // 全角スペースを半角スペースに変換
-      .replace(/…/g, '...')                // 三点リーダーをピリオド3つに変換
+      .replace(/　/g, ' ') // 全角スペースを半角スペースに変換
+      .replace(/…/g, '...') // 三点リーダーをピリオド3つに変換
       .trim();
-    
-    let aiResponse: any;
+
+    let aiResponse: unknown;
     try {
       aiResponse = JSON.parse(cleanJson);
     } catch (error) {
@@ -98,9 +114,9 @@ export async function POST(request: NextRequest) {
     }
 
     // レスポンスを組み立て
-    const response: ApiResponse & { 
-      threatScoreDelta?: number; 
-      newPersona?: string; 
+    const response: ApiResponse & {
+      threatScoreDelta?: number;
+      newPersona?: string;
       punType?: string;
       kasukasuTriggered?: boolean;
       passionTriggered?: boolean;
@@ -128,13 +144,15 @@ export async function POST(request: NextRequest) {
     }
 
     if (passionTriggered || anxiousTriggered) {
-      const rules = profile.specialSystem!.rules as { 
-        triggeredState: string; 
-        anxiousState: string 
+      const rules = profile.specialSystem!.rules as {
+        triggeredState: string;
+        anxiousState: string;
       };
       response.passionTriggered = passionTriggered;
       response.anxiousTriggered = anxiousTriggered;
-      response.newEmotionalState = anxiousTriggered ? rules.anxiousState : rules.triggeredState;
+      response.newEmotionalState = anxiousTriggered
+        ? rules.anxiousState
+        : rules.triggeredState;
     }
 
     return NextResponse.json(response);

@@ -8,18 +8,18 @@ import CharacterSelector from './CharacterSelector';
 import { Message } from '@/types/character';
 
 const characterNames: Record<string, string> = {
-  'ayumu_uehara': '上原歩夢',
-  'setsuna_yuki': '優木せつ菜',
-  'ai_miyashita': '宮下 愛',
-  'kasumi_nakasu': '中須かすみ',
-  'shizuku_osaka': '桜坂しずく',
-  'rina_tennoji': '天王寺璃奈',
-  'shioriko_mifune': '三船栞子',
-  'lanzhu_zhong': '鐘嵐珠',
-  'karin_asaka': '朝香果林',
-  'emma_verde': 'エマ・ヴェルデ',
-  'kanata_konoe': '近江彼方',
-  'mia_taylor': 'ミア・テイラー',
+  ayumu_uehara: '上原歩夢',
+  setsuna_yuki: '優木せつ菜',
+  ai_miyashita: '宮下 愛',
+  kasumi_nakasu: '中須かすみ',
+  shizuku_osaka: '桜坂しずく',
+  rina_tennoji: '天王寺璃奈',
+  shioriko_mifune: '三船栞子',
+  lanzhu_zhong: '鐘嵐珠',
+  karin_asaka: '朝香果林',
+  emma_verde: 'エマ・ヴェルデ',
+  kanata_konoe: '近江彼方',
+  mia_taylor: 'ミア・テイラー',
 };
 
 export default function ChatWindow() {
@@ -172,7 +172,9 @@ export default function ChatWindow() {
       }
 
       // 感情状態を更新
-      if (data.newEmotionalState !== currentCharacterState.currentEmotionalState) {
+      if (
+        data.newEmotionalState !== currentCharacterState.currentEmotionalState
+      ) {
         updateCharacterState(currentCharacterId, {
           currentEmotionalState: data.newEmotionalState,
         });
@@ -202,7 +204,7 @@ export default function ChatWindow() {
     <div className="flex flex-col h-screen bg-background">
       {/* キャラクター選択（フローティング） */}
       <CharacterSelector />
-      
+
       {/* ヘッダー */}
       <div className="bg-card shadow-sm p-4 border-b border-border">
         <CharacterAvatar
@@ -239,7 +241,9 @@ export default function ChatWindow() {
             ) : currentCharacterId === 'shizuku_osaka' ? (
               <>
                 <p>こんにちは、先輩。桜坂しずくです。</p>
-                <p>私はお芝居をすることが大好きです。どうぞよろしくお願いします。</p>
+                <p>
+                  私はお芝居をすることが大好きです。どうぞよろしくお願いします。
+                </p>
               </>
             ) : currentCharacterId === 'rina_tennoji' ? (
               <>
@@ -254,7 +258,9 @@ export default function ChatWindow() {
             ) : currentCharacterId === 'lanzhu_zhong' ? (
               <>
                 <p>こんにちは！ランジュよ。</p>
-                <p>ランジュの最高のパフォーマンス、みんなを夢中にさせちゃうわ！</p>
+                <p>
+                  ランジュの最高のパフォーマンス、みんなを夢中にさせちゃうわ！
+                </p>
               </>
             ) : currentCharacterId === 'karin_asaka' ? (
               <>
@@ -274,7 +280,9 @@ export default function ChatWindow() {
             ) : currentCharacterId === 'mia_taylor' ? (
               <>
                 <p>Oh, hi there. ボクがミア・テイラーだ。</p>
-                <p>What's up, ベイビーちゃん？何か面白い話でもあるのか？</p>
+                <p>
+                  What&apos;s up, ベイビーちゃん？何か面白い話でもあるのか？
+                </p>
               </>
             ) : (
               <>
@@ -284,11 +292,15 @@ export default function ChatWindow() {
             )}
           </div>
         ) : (
-          messages.map((message) => (
+          messages.map(message => (
             <MessageBubble
               key={message.id}
               message={message}
-              characterName={message.sender !== 'user' ? characterNames[message.sender] : undefined}
+              characterName={
+                message.sender !== 'user'
+                  ? characterNames[message.sender]
+                  : undefined
+              }
             />
           ))
         )}
@@ -311,7 +323,7 @@ export default function ChatWindow() {
         <div className="flex space-x-2">
           <textarea
             value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
+            onChange={e => setInputMessage(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="メッセージを入力... (Ctrl+Enter または Cmd+Enter で送信)"
             className="flex-1 border border-border rounded-lg px-3 py-2 bg-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
@@ -326,7 +338,7 @@ export default function ChatWindow() {
             送信
           </button>
         </div>
-        
+
         {/* β版注意書き */}
         <div className="mt-3 text-center">
           <div className="text-xs text-muted-foreground bg-accent border border-border rounded-lg px-3 py-2 inline-block">

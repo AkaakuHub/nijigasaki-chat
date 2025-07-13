@@ -1,0 +1,8 @@
+# Lefthook設定ファイル
+# カスタム設定やスキップ方法などはこちらに記載
+
+# 特定のコミットでhookをスキップする場合:
+# git commit -m "fix: urgent hotfix" --no-verify
+
+# または環境変数で:
+# LEFTHOOK=0 git commit -m "skip hooks"

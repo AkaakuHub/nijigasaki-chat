@@ -20,35 +20,42 @@ import { miaProfile } from '@/data/characters/mia_taylor';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 const characterProfiles = {
-  'ayumu_uehara': ayumuProfile,
-  'setsuna_yuki': setsunaProfile,
-  'ai_miyashita': aiProfile,
-  'kasumi_nakasu': kasumiProfile,
-  'shizuku_osaka': shizukuProfile,
-  'rina_tennoji': rinaProfile,
-  'shioriko_mifune': shiorikoProfile,
-  'lanzhu_zhong': lanzhuProfile,
-  'karin_asaka': karinProfile,
-  'emma_verde': emmaProfile,
-  'kanata_konoe': kanataProfile,
-  'mia_taylor': miaProfile,
+  ayumu_uehara: ayumuProfile,
+  setsuna_yuki: setsunaProfile,
+  ai_miyashita: aiProfile,
+  kasumi_nakasu: kasumiProfile,
+  shizuku_osaka: shizukuProfile,
+  rina_tennoji: rinaProfile,
+  shioriko_mifune: shiorikoProfile,
+  lanzhu_zhong: lanzhuProfile,
+  karin_asaka: karinProfile,
+  emma_verde: emmaProfile,
+  kanata_konoe: kanataProfile,
+  mia_taylor: miaProfile,
 };
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, gameState }: { message: string; gameState: GameState } = await request.json();
+    const { message, gameState }: { message: string; gameState: GameState } =
+      await request.json();
 
     if (!message || !gameState) {
       return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
     }
 
-    const profile = characterProfiles[gameState.currentCharacterId as keyof typeof characterProfiles];
+    const profile =
+      characterProfiles[
+        gameState.currentCharacterId as keyof typeof characterProfiles
+      ];
     if (!profile) {
-      return NextResponse.json({ error: 'Character not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Character not found' },
+        { status: 404 }
+      );
     }
 
     const prompt = generatePrompt(profile, gameState, message);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
@@ -65,9 +72,16 @@ export async function POST(request: NextRequest) {
     // ペルソナ切り替えロジック（せつ菜用）
     if (profile.id === 'setsuna_yuki') {
       const personaSwitchTriggers = {
-        'setsuna_mode': ['好き', '大好き', 'love', 'スクールアイドル', '情熱', '歌'],
-        'nana_mode': ['生徒会', '会長', '責任', '規則', '義務', '学校'],
-        'otaku_mode': ['アニメ', '漫画', 'ゲーム', 'オタク', '趣味', '同人'],
+        setsuna_mode: [
+          '好き',
+          '大好き',
+          'love',
+          'スクールアイドル',
+          '情熱',
+          '歌',
+        ],
+        nana_mode: ['生徒会', '会長', '責任', '規則', '義務', '学校'],
+        otaku_mode: ['アニメ', '漫画', 'ゲーム', 'オタク', '趣味', '同人'],
       };
 
       for (const [mode, triggers] of Object.entries(personaSwitchTriggers)) {
@@ -86,9 +100,16 @@ export async function POST(request: NextRequest) {
 
     // しずくの情熱/不安トリガーチェック
     if (profile.id === 'shizuku_osaka') {
-      const passionTriggers = ['演劇', '舞台', '映画', 'オフィーリア', '役', '演技'];
+      const passionTriggers = [
+        '演劇',
+        '舞台',
+        '映画',
+        'オフィーリア',
+        '役',
+        '演技',
+      ];
       const anxiousTriggers = ['アドリブ', '即興', '素', '自分らしく'];
-      
+
       if (passionTriggers.some(trigger => message.includes(trigger))) {
         responseData.passionTriggered = true;
         responseData.newEmotionalState = 'passion_mode';
@@ -102,7 +123,7 @@ export async function POST(request: NextRequest) {
     if (profile.id === 'lanzhu_zhong') {
       const lonelyTriggers = ['断る', '拒絶', '理解されない', '遠慮'];
       const queenRecovery = ['褒める', '受け入れる', '感謝', '最高'];
-      
+
       if (lonelyTriggers.some(trigger => message.includes(trigger))) {
         responseData.queenLonelyCycleTriggered = true;
         responseData.newEmotionalState = 'lonely_mode';
@@ -114,9 +135,23 @@ export async function POST(request: NextRequest) {
 
     // 果林のdiva_pure_switchトリガーチェック
     if (profile.id === 'karin_asaka') {
-      const pureModeTriggers = ['優しい', '親切', '本当は', '内面', '心', 'エマ', '世話'];
-      const divaRecovery = ['ステージ', 'パフォーマンス', 'モデル', 'セクシー', '魅力'];
-      
+      const pureModeTriggers = [
+        '優しい',
+        '親切',
+        '本当は',
+        '内面',
+        '心',
+        'エマ',
+        '世話',
+      ];
+      const divaRecovery = [
+        'ステージ',
+        'パフォーマンス',
+        'モデル',
+        'セクシー',
+        '魅力',
+      ];
+
       if (pureModeTriggers.some(trigger => message.includes(trigger))) {
         responseData.divaPureSwitchTriggered = true;
         responseData.newEmotionalState = 'pure_mode';
@@ -128,9 +163,23 @@ export async function POST(request: NextRequest) {
 
     // エマのactive_healingトリガーチェック
     if (profile.id === 'emma_verde') {
-      const firmKindnessTriggers = ['不当', '非難', '諦め', '無理', 'ダメ', 'やめろ'];
-      const healingTriggers = ['悲しい', '不安', '辛い', '疲れた', '落ち込む', '心配'];
-      
+      const firmKindnessTriggers = [
+        '不当',
+        '非難',
+        '諦め',
+        '無理',
+        'ダメ',
+        'やめろ',
+      ];
+      const healingTriggers = [
+        '悲しい',
+        '不安',
+        '辛い',
+        '疲れた',
+        '落ち込む',
+        '心配',
+      ];
+
       if (firmKindnessTriggers.some(trigger => message.includes(trigger))) {
         responseData.activeHealingTriggered = true;
         responseData.newEmotionalState = 'firm_kindness_mode';
@@ -142,20 +191,27 @@ export async function POST(request: NextRequest) {
 
     // 彼方のenergy_economyシステム処理
     if (profile.id === 'kanata_konoe') {
-      const passionTriggers = ['遥', '妹', '料理', 'お弁当', 'スクールアイドル', '楽しい'];
+      const passionTriggers = [
+        '遥',
+        '妹',
+        '料理',
+        'お弁当',
+        'スクールアイドル',
+        '楽しい',
+      ];
       const currentEnergy = gameState.characterStates[profile.id].energy || 60;
-      
+
       let newEnergy = currentEnergy - 3; // 基本消費
-      
+
       if (passionTriggers.some(trigger => message.includes(trigger))) {
         newEnergy += 25; // 情熱トリガーでエナジー回復
         responseData.energyEconomyTriggered = true;
         responseData.newEmotionalState = 'passion_mode';
       }
-      
+
       newEnergy = Math.max(0, Math.min(100, newEnergy));
       responseData.newEnergy = newEnergy;
-      
+
       if (newEnergy < 30 && !responseData.energyEconomyTriggered) {
         responseData.newEmotionalState = 'low_energy_mode';
       }
@@ -164,12 +220,19 @@ export async function POST(request: NextRequest) {
     // ミアのcode_switching_japanglishトリガーチェック
     if (profile.id === 'mia_taylor') {
       const vulnerabilityTriggers = ['歌', '家族', '過去', '夢', '諦め', '声'];
-      const currentState = gameState.characterStates[profile.id].currentEmotionalState;
-      
-      if (vulnerabilityTriggers.some(trigger => message.includes(trigger)) && currentState === 'cool_genius_mode') {
+      const currentState =
+        gameState.characterStates[profile.id].currentEmotionalState;
+
+      if (
+        vulnerabilityTriggers.some(trigger => message.includes(trigger)) &&
+        currentState === 'cool_genius_mode'
+      ) {
         responseData.codeSwitchingTriggered = true;
         responseData.newEmotionalState = 'vulnerable_mode';
-      } else if (currentState === 'vulnerable_mode' && !vulnerabilityTriggers.some(trigger => message.includes(trigger))) {
+      } else if (
+        currentState === 'vulnerable_mode' &&
+        !vulnerabilityTriggers.some(trigger => message.includes(trigger))
+      ) {
         responseData.codeSwitchingTriggered = true;
         responseData.newEmotionalState = 'cool_genius_mode';
       }
@@ -178,6 +241,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(responseData);
   } catch (error) {
     console.error('Error processing request:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

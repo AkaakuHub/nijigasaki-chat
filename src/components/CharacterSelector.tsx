@@ -23,7 +23,7 @@ const characters = [
     unit: 'A・ZU・NA',
     color: 'from-pink-300 to-rose-400',
     emoji: ayumuProfile.emoji,
-    description: ayumuProfile.uiDescription
+    description: ayumuProfile.uiDescription,
   },
   {
     id: 'setsuna_yuki',
@@ -31,7 +31,7 @@ const characters = [
     unit: 'A・ZU・NA',
     color: 'from-red-300 to-pink-400',
     emoji: setsunaProfile.emoji,
-    description: setsunaProfile.uiDescription
+    description: setsunaProfile.uiDescription,
   },
   {
     id: 'ai_miyashita',
@@ -39,7 +39,7 @@ const characters = [
     unit: 'DiverDiva',
     color: 'from-yellow-300 to-orange-400',
     emoji: aiProfile.emoji,
-    description: aiProfile.uiDescription
+    description: aiProfile.uiDescription,
   },
   {
     id: 'kasumi_nakasu',
@@ -47,7 +47,7 @@ const characters = [
     unit: 'QU4RTZ',
     color: 'from-purple-300 to-pink-400',
     emoji: kasumiProfile.emoji,
-    description: kasumiProfile.uiDescription
+    description: kasumiProfile.uiDescription,
   },
   {
     id: 'shizuku_osaka',
@@ -55,7 +55,7 @@ const characters = [
     unit: 'A・ZU・NA',
     color: 'from-blue-300 to-purple-400',
     emoji: shizukuProfile.emoji,
-    description: shizukuProfile.uiDescription
+    description: shizukuProfile.uiDescription,
   },
   {
     id: 'rina_tennoji',
@@ -63,7 +63,7 @@ const characters = [
     unit: 'QU4RTZ',
     color: 'from-gray-300 to-blue-400',
     emoji: rinaProfile.emoji,
-    description: rinaProfile.uiDescription
+    description: rinaProfile.uiDescription,
   },
   {
     id: 'shioriko_mifune',
@@ -71,7 +71,7 @@ const characters = [
     unit: 'R3BIRTH',
     color: 'from-indigo-300 to-purple-400',
     emoji: shiorikoProfile.emoji,
-    description: shiorikoProfile.uiDescription
+    description: shiorikoProfile.uiDescription,
   },
   {
     id: 'lanzhu_zhong',
@@ -79,7 +79,7 @@ const characters = [
     unit: 'R3BIRTH',
     color: 'from-amber-300 to-yellow-400',
     emoji: lanzhuProfile.emoji,
-    description: lanzhuProfile.uiDescription
+    description: lanzhuProfile.uiDescription,
   },
   {
     id: 'karin_asaka',
@@ -87,7 +87,7 @@ const characters = [
     unit: 'DiverDiva',
     color: 'from-purple-400 to-pink-500',
     emoji: karinProfile.emoji,
-    description: karinProfile.uiDescription
+    description: karinProfile.uiDescription,
   },
   {
     id: 'emma_verde',
@@ -95,7 +95,7 @@ const characters = [
     unit: 'QU4RTZ',
     color: 'from-green-300 to-emerald-400',
     emoji: emmaProfile.emoji,
-    description: emmaProfile.uiDescription
+    description: emmaProfile.uiDescription,
   },
   {
     id: 'kanata_konoe',
@@ -103,7 +103,7 @@ const characters = [
     unit: 'QU4RTZ',
     color: 'from-purple-200 to-purple-300',
     emoji: kanataProfile.emoji,
-    description: kanataProfile.uiDescription
+    description: kanataProfile.uiDescription,
   },
   {
     id: 'mia_taylor',
@@ -111,15 +111,17 @@ const characters = [
     unit: 'R3BIRTH',
     color: 'from-cyan-300 to-blue-400',
     emoji: miaProfile.emoji,
-    description: miaProfile.uiDescription
+    description: miaProfile.uiDescription,
   },
 ];
 
 export default function CharacterSelector() {
-  const { currentCharacterId, setCurrentCharacter, resetConversation } = useGameStore();
+  const { currentCharacterId, setCurrentCharacter, resetConversation } =
+    useGameStore();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [hoveredCharacter, setHoveredCharacter] = useState<string | null>(null);
-  const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null);
+  const [selectedCharacter, setSelectedCharacter] = useState<string | null>(
+    null
+  );
 
   const handleCharacterChange = (characterId: string) => {
     if (characterId !== currentCharacterId) {
@@ -128,26 +130,28 @@ export default function CharacterSelector() {
     }
     setIsExpanded(false);
     setSelectedCharacter(null);
-    setHoveredCharacter(null);
   };
 
   const handleMouseEnter = (characterId: string) => {
-    setHoveredCharacter(characterId);
     setSelectedCharacter(characterId);
   };
 
-  const currentCharacter = characters.find(char => char.id === currentCharacterId);
-  const otherCharacters = characters.filter(char => char.id !== currentCharacterId);
-  const displayCharacter = selectedCharacter 
-    ? characters.find(char => char.id === selectedCharacter) 
+  const currentCharacter = characters.find(
+    char => char.id === currentCharacterId
+  );
+  const otherCharacters = characters.filter(
+    char => char.id !== currentCharacterId
+  );
+  const displayCharacter = selectedCharacter
+    ? characters.find(char => char.id === selectedCharacter)
     : currentCharacter;
 
   return (
     <>
       {/* 背景オーバーレイ（展開時のみ） */}
       {isExpanded && (
-        <div 
-          className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
+        <div
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
           onClick={() => setIsExpanded(false)}
         />
       )}
@@ -164,11 +168,13 @@ export default function CharacterSelector() {
         >
           {currentCharacter?.emoji}
         </button>
-        
+
         {/* 展開/閉じるアイコン */}
-        <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full 
+        <div
+          className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full 
           flex items-center justify-center shadow-lg transition-all duration-300
-          ${isExpanded ? 'bg-destructive' : 'bg-primary'}`}>
+          ${isExpanded ? 'bg-destructive' : 'bg-primary'}`}
+        >
           <span className="text-card text-xs font-bold">
             {isExpanded ? '×' : '+'}
           </span>
@@ -192,7 +198,6 @@ export default function CharacterSelector() {
                   key={character.id}
                   onClick={() => handleCharacterChange(character.id)}
                   onMouseEnter={() => handleMouseEnter(character.id)}
-                  onMouseLeave={() => setHoveredCharacter(null)}
                   className={`absolute w-16 h-16 rounded-full bg-gradient-to-br ${character.color}
                     flex items-center justify-center text-2xl shadow-xl border-3 border-card
                     transition-all duration-300 hover:shadow-2xl hover:drop-shadow-2xl hover:scale-110
@@ -213,13 +218,13 @@ export default function CharacterSelector() {
 
       {/* 情報表示カード（画面下部固定） */}
       {isExpanded && displayCharacter && (
-        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50
+        <div
+          className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50
           bg-card/95 backdrop-blur-md px-8 py-6 rounded-3xl shadow-2xl border border-border
-          transition-all duration-300 min-w-64 max-w-80 mx-4">
+          transition-all duration-300 min-w-64 max-w-80 mx-4"
+        >
           <div className="text-center">
-            <div className="text-4xl mb-4">
-              {displayCharacter.emoji}
-            </div>
+            <div className="text-4xl mb-4">{displayCharacter.emoji}</div>
             <div className="text-2xl font-bold text-card-foreground mb-3">
               {displayCharacter.name}
             </div>

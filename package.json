@@ -6,7 +6,12 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,md}\"",
+    "type-check": "tsc --noEmit",
+    "test": "echo \"No tests yet\"",
+    "check-colors": "node scripts/check-tailwind-colors.js src/**/*.tsx src/**/*.jsx",
+    "prepare": "lefthook install"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -23,6 +28,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.5",
+    "lefthook": "^1.12.2",
+    "prettier": "^3.6.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

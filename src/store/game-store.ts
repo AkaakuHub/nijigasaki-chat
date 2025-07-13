@@ -78,16 +78,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
     },
   },
 
-  setCurrentCharacter: (id: string) => 
-    set({ currentCharacterId: id }),
+  setCurrentCharacter: (id: string) => set({ currentCharacterId: id }),
 
-  addMessage: (message: Message) => 
-    set((state) => ({
+  addMessage: (message: Message) =>
+    set(state => ({
       messages: [...state.messages, message],
     })),
 
   updateCharacterState: (id: string, newState: Partial<CharacterState>) =>
-    set((state) => ({
+    set(state => ({
       characterStates: {
         ...state.characterStates,
         [id]: {
@@ -102,8 +101,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const currentState = state.characterStates[characterId];
     if (!currentState) return;
 
-    const newThreatScore = Math.max(0, Math.min(100, (currentState.threatScore || 0) + delta));
-    
+    const newThreatScore = Math.max(
+      0,
+      Math.min(100, (currentState.threatScore || 0) + delta)
+    );
+
     // 脅威スコアに基づいて感情状態を更新（3段階）
     let newEmotionalState = currentState.currentEmotionalState;
     if (newThreatScore >= 70) {
@@ -114,7 +116,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       newEmotionalState = 'stable';
     }
 
-    set((state) => ({
+    set(state => ({
       characterStates: {
         ...state.characterStates,
         [characterId]: {
@@ -127,11 +129,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   updateRelationshipLevel: (characterId: string, delta: number) => {
-    set((state) => {
+    set(state => {
       const currentState = state.characterStates[characterId];
       if (!currentState) return state;
 
-      const newRelationshipLevel = Math.max(0, Math.min(100, currentState.relationshipLevel + delta));
+      const newRelationshipLevel = Math.max(
+        0,
+        Math.min(100, currentState.relationshipLevel + delta)
+      );
 
       return {
         characterStates: {

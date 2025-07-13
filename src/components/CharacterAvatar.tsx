@@ -8,7 +8,11 @@ interface CharacterAvatarProps {
   characterState: CharacterState;
 }
 
-export default function CharacterAvatar({ characterId, characterName, characterState }: CharacterAvatarProps) {
+export default function CharacterAvatar({
+  characterId,
+  characterName,
+  characterState,
+}: CharacterAvatarProps) {
   const getEmotionalStateColor = (state: string) => {
     switch (state) {
       case 'stable':
@@ -62,7 +66,9 @@ export default function CharacterAvatar({ characterId, characterName, characterS
           </span>
         </div>
         <div className="flex-1">
-          <h3 className="font-bold text-lg text-card-foreground">{characterName}</h3>
+          <h3 className="font-bold text-lg text-card-foreground">
+            {characterName}
+          </h3>
           <div className="flex items-center space-x-2 mt-1">
             <span
               className={`px-2 py-1 rounded-full text-xs font-medium ${getEmotionalStateColor(
@@ -75,14 +81,17 @@ export default function CharacterAvatar({ characterId, characterName, characterS
               親密度: {characterState.relationshipLevel}/100
             </span>
           </div>
-          {characterId === 'ayumu_uehara' && characterState.threatScore !== undefined && (
-            <div className="mt-1">
-              <span className="text-sm text-muted-foreground">脅威度: </span>
-              <span className={`text-sm font-medium ${getThreatScoreColor(characterState.threatScore)}`}>
-                {characterState.threatScore}/100
-              </span>
-            </div>
-          )}
+          {characterId === 'ayumu_uehara' &&
+            characterState.threatScore !== undefined && (
+              <div className="mt-1">
+                <span className="text-sm text-muted-foreground">脅威度: </span>
+                <span
+                  className={`text-sm font-medium ${getThreatScoreColor(characterState.threatScore)}`}
+                >
+                  {characterState.threatScore}/100
+                </span>
+              </div>
+            )}
         </div>
       </div>
     </div>

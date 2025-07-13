@@ -31,7 +31,7 @@ export type CharacterProfile = {
   unit: 'A・ZU・NA' | 'QU4RTZ' | 'DiverDiva' | 'R3BIRTH' | 'none';
   emoji: string; // UI用の絵文字
   uiDescription: string; // UI用の短い説明文
-  
+
   // 基本プロフィール
   coreProfile: {
     birthday: string;
@@ -45,7 +45,7 @@ export type CharacterProfile = {
   psychology: {
     primaryMotivation: string;
     coreConflict: string;
-    coreMemories: Array<{ title: string; description: string; }>;
+    coreMemories: Array<{ title: string; description: string }>;
   };
 
   // 感情モデルとペルソナ
@@ -53,10 +53,21 @@ export type CharacterProfile = {
 
   // 人間関係
   relationships: Relationship[];
-  
+
   // 特殊システム (該当キャラクターのみ)
   specialSystem?: {
-    type: 'dual_channel' | 'pun_system' | 'persona_switching' | 'kasukasu_trigger' | 'passion_trigger' | 'growth_reflection' | 'queen_lonely_cycle' | 'diva_pure_switch' | 'active_healing' | 'energy_economy' | 'code_switching_japanglish';
+    type:
+      | 'dual_channel'
+      | 'pun_system'
+      | 'persona_switching'
+      | 'kasukasu_trigger'
+      | 'passion_trigger'
+      | 'growth_reflection'
+      | 'queen_lonely_cycle'
+      | 'diva_pure_switch'
+      | 'active_healing'
+      | 'energy_economy'
+      | 'code_switching_japanglish';
     description?: string; // システムの説明
     rules: Record<string, unknown>; // システムごとに固有のルールを定義
   };
@@ -93,6 +104,6 @@ export type ApiResponse = {
   newEmotionalState: string;
   newThreatScore?: number;
   relationshipChange?: number; // 親密度の変動量
-  threatScoreChange?: number;  // 脅威スコアの変動量
-  rinaBoardState?: string;     // 璃奈ちゃんボードの状態
+  threatScoreChange?: number; // 脅威スコアの変動量
+  rinaBoardState?: string; // 璃奈ちゃんボードの状態
 };

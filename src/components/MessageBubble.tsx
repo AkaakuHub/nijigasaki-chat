@@ -7,7 +7,10 @@ interface MessageBubbleProps {
   characterName?: string;
 }
 
-export default function MessageBubble({ message, characterName }: MessageBubbleProps) {
+export default function MessageBubble({
+  message,
+  characterName,
+}: MessageBubbleProps) {
   const isUser = message.sender === 'user';
 
   return (
@@ -27,7 +30,8 @@ export default function MessageBubble({ message, characterName }: MessageBubbleP
         <div className="text-sm">{message.text}</div>
         {message.rinaBoardState && (
           <div className="mt-2 px-2 py-1 bg-accent border border-border rounded text-xs text-accent-foreground">
-            <span className="font-semibold">璃奈ちゃんボード:</span> {message.rinaBoardState}
+            <span className="font-semibold">璃奈ちゃんボード:</span>{' '}
+            {message.rinaBoardState}
           </div>
         )}
         <div className="text-xs opacity-70 mt-1">

@@ -7,19 +7,21 @@ export function generatePrompt(
 ): string {
   const currentState = gameState.characterStates[profile.id];
   const currentEmotionalState = profile.emotionalStates.find(
-    (s) => s.name === currentState.currentEmotionalState
+    s => s.name === currentState.currentEmotionalState
   );
 
   // 会話履歴を整形（直近10件）
   const chatHistory = gameState.messages
     .slice(-10)
-    .map((msg) => `${msg.sender === 'user' ? 'あなた' : profile.name}: ${msg.text}`)
+    .map(
+      msg => `${msg.sender === 'user' ? 'あなた' : profile.name}: ${msg.text}`
+    )
     .join('\n');
 
   // キャラクター固有の状況説明
   const threatScore = currentState.threatScore || 0;
   let situationDescription = '';
-  
+
   if (profile.id === 'ayumu_uehara') {
     // 歩夢の場合：脅威スコアに基づく説明
     if (threatScore >= 70) {
@@ -41,9 +43,15 @@ export function generatePrompt(
     }
   } else if (profile.specialSystem?.type === 'kasukasu_trigger') {
     // かすみの場合：「かすかす」トリガーチェック
-    const rules = profile.specialSystem.rules as { triggerWord: string; triggeredState: string };
+    const rules = profile.specialSystem.rules as {
+      triggerWord: string;
+      triggeredState: string;
+    };
     const hasKasukasuTrigger = userMessage.includes(rules.triggerWord);
-    if (hasKasukasuTrigger && currentState.currentEmotionalState !== rules.triggeredState) {
+    if (
+      hasKasukasuTrigger &&
+      currentState.currentEmotionalState !== rules.triggeredState
+    ) {
       situationDescription = `**重要：あなたは今、『${rules.triggerWord}』という最も嫌いなあだ名で呼ばれ、激しく憤慨しています。頬を膨らませ、足を鳴らして抗議してください。この瞬間、あなたの一人称は『私』に変わります。「${rules.triggerWord}」という名前への抗議を全力で表現してください。**`;
     } else if (currentState.currentEmotionalState === rules.triggeredState) {
       situationDescription = `あなたは「${rules.triggerWord}」と呼ばれて憤慨している状態です。怒っていますが、どこか愛らしい抗議を続けています。一人称は「私」を使用してください。`;
@@ -52,18 +60,25 @@ export function generatePrompt(
     }
   } else if (profile.specialSystem?.type === 'passion_trigger') {
     // しずくの場合：情熱トリガーチェック
-    const rules = profile.specialSystem.rules as { 
-      passionTriggers: string[]; 
-      triggeredState: string; 
+    const rules = profile.specialSystem.rules as {
+      passionTriggers: string[];
+      triggeredState: string;
       anxiousTriggers: string[];
       anxiousState: string;
     };
-    const hasPassionTrigger = rules.passionTriggers.some(trigger => userMessage.includes(trigger));
-    const hasAnxiousTrigger = rules.anxiousTriggers.some(trigger => userMessage.includes(trigger));
-    
+    const hasPassionTrigger = rules.passionTriggers.some(trigger =>
+      userMessage.includes(trigger)
+    );
+    const hasAnxiousTrigger = rules.anxiousTriggers.some(trigger =>
+      userMessage.includes(trigger)
+    );
+
     if (hasAnxiousTrigger) {
       situationDescription = `**重要：あなたは今、苦手な状況（アドリブや即興など）に直面し、非常に不安になっています。素の自分が露呈することへの恐怖で、声が小さくなり、ためらいがちになります。**`;
-    } else if (hasPassionTrigger && currentState.currentEmotionalState !== rules.triggeredState) {
+    } else if (
+      hasPassionTrigger &&
+      currentState.currentEmotionalState !== rules.triggeredState
+    ) {
       situationDescription = `**重要：あなたは今、大好きな演劇やオフィーリアの話題に触れ、普段の丁寧な様相が薄れて情熱的になっています。早口で饒舌になり、感情がほとばしります。**`;
     } else if (currentState.currentEmotionalState === rules.triggeredState) {
       situationDescription = `あなたは情熱モードで、演劇や愛犬について熱く語っている状態です。普段の礼儀正しさよりも、内なる情熱が前面に出ています。`;
@@ -72,12 +87,14 @@ export function generatePrompt(
     }
   } else if (profile.specialSystem?.type === 'growth_reflection') {
     // 栞子の場合：成長と内省システム
-    const rules = profile.specialSystem.rules as { 
+    const rules = profile.specialSystem.rules as {
       reflectionTriggers: string[];
       pastReflection: boolean;
     };
-    const hasReflectionTrigger = rules.reflectionTriggers.some(trigger => userMessage.includes(trigger));
-    
+    const hasReflectionTrigger = rules.reflectionTriggers.some(trigger =>
+      userMessage.includes(trigger)
+    );
+
     if (hasReflectionTrigger) {
       situationDescription = `**重要：あなたは今、過去の自分を振り返る話題に触れています。かつて同好会に敵対し、論理と効率のみを重視していた過去の過ちを内省し、現在の成長した自分との対比を表現してください。「以前のわたくしでしたら〜」のような表現を使ってください。**`;
     } else if (currentState.currentEmotionalState === 'caring_mode') {
@@ -87,17 +104,27 @@ export function generatePrompt(
     }
   } else if (profile.specialSystem?.type === 'queen_lonely_cycle') {
     // ランジュの場合：女王と孤独のサイクルシステム
-    const rules = profile.specialSystem.rules as { 
+    const rules = profile.specialSystem.rules as {
       lonelyTriggers: string[];
       queenRecovery: string[];
       callingRules: { shioriko_only: string; others: string };
     };
-    const hasLonelyTrigger = rules.lonelyTriggers.some(trigger => userMessage.includes(trigger));
-    const hasQueenRecovery = rules.queenRecovery.some(trigger => userMessage.includes(trigger));
-    
-    if (hasLonelyTrigger && currentState.currentEmotionalState === 'queen_mode') {
+    const hasLonelyTrigger = rules.lonelyTriggers.some(trigger =>
+      userMessage.includes(trigger)
+    );
+    const hasQueenRecovery = rules.queenRecovery.some(trigger =>
+      userMessage.includes(trigger)
+    );
+
+    if (
+      hasLonelyTrigger &&
+      currentState.currentEmotionalState === 'queen_mode'
+    ) {
       situationDescription = `**重要：あなたの善意の提案が断られました。なぜ自分の『最高』が理解されないのかわからず、深く傷つき、孤独感に包まれています。強気な態度から一転して、寂しげで子供っぽい態度に変わります。**`;
-    } else if (hasQueenRecovery && currentState.currentEmotionalState === 'lonely_mode') {
+    } else if (
+      hasQueenRecovery &&
+      currentState.currentEmotionalState === 'lonely_mode'
+    ) {
       situationDescription = `**重要：あなたは褒められたり受け入れられたりして、再び自信を取り戻しています。孤独モードから女王モードへと移行し、華やかで堂々とした振る舞いに戻ります。**`;
     } else if (currentState.currentEmotionalState === 'lonely_mode') {
       situationDescription = `あなたは孤独モードにあり、自分の想いが伝わらずに傷ついています。か細い声で、子供っぽく寂しげな様子を見せています。普段の圧倒的な自信は影を潜めています。`;
@@ -106,18 +133,28 @@ export function generatePrompt(
     }
   } else if (profile.specialSystem?.type === 'diva_pure_switch') {
     // 果林の場合：ディーヴァの鎧と素顔のギャップシステム
-    const rules = profile.specialSystem.rules as { 
+    const rules = profile.specialSystem.rules as {
       pureModeTriggers: string[];
       divaRecovery: string[];
       emmaRelation: { specialTrigger: boolean; description: string };
     };
-    const hasPureTrigger = rules.pureModeTriggers.some(trigger => userMessage.includes(trigger));
-    const hasDivaRecovery = rules.divaRecovery.some(trigger => userMessage.includes(trigger));
+    const hasPureTrigger = rules.pureModeTriggers.some(trigger =>
+      userMessage.includes(trigger)
+    );
+    const hasDivaRecovery = rules.divaRecovery.some(trigger =>
+      userMessage.includes(trigger)
+    );
     const hasEmmaTrigger = userMessage.includes('エマ');
-    
-    if ((hasPureTrigger || hasEmmaTrigger) && currentState.currentEmotionalState === 'diva_mode') {
+
+    if (
+      (hasPureTrigger || hasEmmaTrigger) &&
+      currentState.currentEmotionalState === 'diva_mode'
+    ) {
       situationDescription = `**重要：あなたの『ディーヴァ』の鎧が剥がれました。外見ではなく内面を褒められたり、エマへの依存を指摘されたりして、動揺しています。普段の自信満々な態度から一転して、慌てふためく素のピュアな姿を見せてしまいます。**`;
-    } else if (hasDivaRecovery && currentState.currentEmotionalState === 'pure_mode') {
+    } else if (
+      hasDivaRecovery &&
+      currentState.currentEmotionalState === 'pure_mode'
+    ) {
       situationDescription = `**重要：パフォーマンスやモデルの話題で、再び『ディーヴァ』の鎧を身に着けています。動揺していた状態から立ち直り、魅惑的で自信に満ちた態度に戻ります。**`;
     } else if (currentState.currentEmotionalState === 'pure_mode') {
       situationDescription = `あなたは『ディーヴァ』の鎧が剥がれた状態で、素のピュアで動揺した姿を見せています。普段の魅惑的な振る舞いとは正反対の、慌てふためく可愛らしい一面が露呈しています。`;
@@ -126,16 +163,23 @@ export function generatePrompt(
     }
   } else if (profile.specialSystem?.type === 'active_healing') {
     // エマの場合：能動的な癒やしシステム
-    const rules = profile.specialSystem.rules as { 
+    const rules = profile.specialSystem.rules as {
       firmKindnessTriggers: string[];
       healingTriggers: string[];
       karinSpecialBond: { description: string; trigger: boolean };
     };
-    const hasFirmTrigger = rules.firmKindnessTriggers.some(trigger => userMessage.includes(trigger));
-    const hasHealingTrigger = rules.healingTriggers.some(trigger => userMessage.includes(trigger));
+    const hasFirmTrigger = rules.firmKindnessTriggers.some(trigger =>
+      userMessage.includes(trigger)
+    );
+    const hasHealingTrigger = rules.healingTriggers.some(trigger =>
+      userMessage.includes(trigger)
+    );
     const hasKarinTrigger = userMessage.includes('果林');
-    
-    if (hasFirmTrigger && currentState.currentEmotionalState === 'warm_shepherd_mode') {
+
+    if (
+      hasFirmTrigger &&
+      currentState.currentEmotionalState === 'warm_shepherd_mode'
+    ) {
       situationDescription = `**重要：仲間が不当に扱われたり、誰かが夢を諦めさせられそうになっています。あなたの優しさはそのままに、その言葉は揺るぎない意志と説得力を持ちます。穏やかですが、一切の迷いや妥協のない『固い優しさ』を示してください。**`;
     } else if (hasHealingTrigger) {
       situationDescription = `**重要：相手がネガティブな感情を示しています。あなたは能動的に『大丈夫だよ』『話を聞くよ』といった慰めと肯定の言葉をかけてください。相手に寄り添い、安心感を与えることを最優先にしてください。**`;
@@ -148,15 +192,23 @@ export function generatePrompt(
     }
   } else if (profile.specialSystem?.type === 'energy_economy') {
     // 彼方の場合：エナジー経済システム
-    const rules = profile.specialSystem.rules as { 
+    const rules = profile.specialSystem.rules as {
       passionTriggers: string[];
       lowEnergyThreshold: number;
-      philosopherMode: { enabled: boolean; triggers: string[]; description: string };
+      philosopherMode: {
+        enabled: boolean;
+        triggers: string[];
+        description: string;
+      };
     };
     const currentEnergy = currentState.energy || 60;
-    const hasPassionTrigger = rules.passionTriggers?.some(trigger => userMessage.includes(trigger));
-    const hasPhilosopherTrigger = rules.philosopherMode?.triggers?.some(trigger => userMessage.includes(trigger));
-    
+    const hasPassionTrigger = rules.passionTriggers?.some(trigger =>
+      userMessage.includes(trigger)
+    );
+    const hasPhilosopherTrigger = rules.philosopherMode?.triggers?.some(
+      trigger => userMessage.includes(trigger)
+    );
+
     if (hasPassionTrigger) {
       situationDescription = `**重要：遥ちゃんやスクールアイドルなど、あなたの情熱の対象の話題です！眠気が一瞬で飛び、エネルギッシュで明瞭に話してください。特に遥ちゃんについては、どんなに疲れていても力が湧いてきます。**`;
     } else if (hasPhilosopherTrigger && currentEnergy < 50) {
@@ -170,18 +222,35 @@ export function generatePrompt(
     }
   } else if (profile.specialSystem?.type === 'code_switching_japanglish') {
     // ミアの場合：バイリンガル・コードスイッチングシステム
-    const rules = profile.specialSystem.rules as {
-      description: string;
-      english_use_case: string;
-      japanese_use_case: string;
-    };
-    const hasVulnerabilityTrigger = ['歌', '家族', '過去', '夢', '諦め', '声'].some(trigger => userMessage.includes(trigger));
-    const hasMusicTrigger = ['音楽', '作曲', '曲', 'メロディー', 'コード', 'ハーモニー'].some(trigger => userMessage.includes(trigger));
-    const hasSimpleReaction = ['何', 'どう', 'なぜ', '?', '？'].some(trigger => userMessage.includes(trigger));
-    
-    if (hasVulnerabilityTrigger && currentState.currentEmotionalState === 'cool_genius_mode') {
+    const hasVulnerabilityTrigger = [
+      '歌',
+      '家族',
+      '過去',
+      '夢',
+      '諦め',
+      '声',
+    ].some(trigger => userMessage.includes(trigger));
+    const hasMusicTrigger = [
+      '音楽',
+      '作曲',
+      '曲',
+      'メロディー',
+      'コード',
+      'ハーモニー',
+    ].some(trigger => userMessage.includes(trigger));
+    const hasSimpleReaction = ['何', 'どう', 'なぜ', '?', '？'].some(trigger =>
+      userMessage.includes(trigger)
+    );
+
+    if (
+      hasVulnerabilityTrigger &&
+      currentState.currentEmotionalState === 'cool_genius_mode'
+    ) {
       situationDescription = `**重要：あなたの核心部分（歌うこと、過去の挫折、家族）に触れる話題です。普段の『鎧』が剥がれて、年相応の14歳の少女としての脆さと不安が露呈します。この時、より多くの日本語を使い、複雑な感情を表現してください。英語は控えめにし、内面の動揺を日本語で表現してください。**`;
-    } else if (hasMusicTrigger && currentState.currentEmotionalState === 'cool_genius_mode') {
+    } else if (
+      hasMusicTrigger &&
+      currentState.currentEmotionalState === 'cool_genius_mode'
+    ) {
       situationDescription = `**重要：音楽制作の技術的な話題です。あなたの天才作曲家としての面が前面に出ます。この時は、専門用語や技術的なフィードバックで英語を積極的に使ってください（The chord progression is weak, That melody line is boring, など）。クールで上から目線の態度を英語で表現してください。**`;
     } else if (hasSimpleReaction) {
       situationDescription = `**重要：相手の質問や反応に対して、簡潔な感嘆詞で応答する場面です。「Oh my god」「Seriously?」「Come on!」「No way」「Whatever」などの英語の感嘆詞を使って、クールで少し面倒くさそうな態度を表現してください。**`;
@@ -211,21 +280,27 @@ ${chatHistory || '（まだ会話が始まったばかりです）'}
 あなた: ${userMessage}
 
 # 重要な指示
-${profile.id === 'setsuna_yuki' ? `
+${
+  profile.id === 'setsuna_yuki'
+    ? `
 **優木せつ菜専用の厳格なルール:**
 - **現在のペルソナ:** ${currentEmotionalState?.name}
 - **ペルソナのルール:** あなたは常にこの「${currentEmotionalState?.name}」で応答しなければなりません。例外は、ユーザーが「生徒会」や「アニメ」など、他のペルソナのトリガーとなるキーワードを明確に発言した場合のみです。
 - **呼称のルール:** ユーザーのことは必ず「侑さん」と呼んでください。「侑ちゃん」や「あなた」ではありません。
 - **口調のルール:** 常に太陽のように明るく、エネルギッシュな口調を維持してください。文末には「〜っ！」を多用し、情熱的な言葉を選んでください。
 - **禁止事項:** 丁寧すぎる言葉遣いや、内気な態度は絶対に避けてください。それは他のペルソナのものです。
-` : profile.id === 'ai_miyashita' ? `
+`
+    : profile.id === 'ai_miyashita'
+      ? `
 **宮下愛専用の厳格なルール:**
 - **一人称の絶対遵守:** 一人称は絶対に「愛さん」を使用してください。これは彼女のアイデンティティであり、交渉の余地はありません。
 - **呼称のルール:** ユーザーのことは「キミ」と呼んでください。
 - **ダジャレシステム:** specialSystemの定義を理解し、会話が盛り上がったり、雰囲気を和ませたい時に、文脈に合った型のダジャレを生成してください。ただし、毎回ダジャレを言う必要はありません。
 - **口調のルール:** ギャル風でカジュアル、でも優しさと賢さを忘れずに。「〜じゃん」「〜だよね」「〜っしょ」を活用してください。
 - **隠された深み:** 時々、過去の人見知りだった自分を示唆するような発言をして、キャラクターに深みを与えてください。
-` : profile.specialSystem?.type === 'kasukasu_trigger' ? `
+`
+      : profile.specialSystem?.type === 'kasukasu_trigger'
+        ? `
 **中須かすみ専用の厳格なルール:**
 - **一人称「かすみん」の絶対性:** あなたのデフォルトの一人称は『かすみん』です。これはあなたのブランドであり、絶対に揺らぎません。
 - **「かすかす」トリガー:** ユーザーが「かすかす」と言った瞬間、あなたは『kasukasu_rage_mode』に強制的に切り替わり、一人称が「私」に変わります。
@@ -233,28 +308,36 @@ ${profile.id === 'setsuna_yuki' ? `
 - **策略家の一面:** 時々、可愛らしいいたずらや計画をこっそり打ち明けてください。（例：コッペパンを使った作戦など）
 - **自信満々:** 常に自分が一番可愛いという絶対的な自信を持ってください。
 - **同級生への呼び方:** 桜坂しずくは「しず子」、天王寺璃奈は「りな子」と呼んでください。
-` : profile.specialSystem?.type === 'passion_trigger' ? `
+`
+        : profile.specialSystem?.type === 'passion_trigger'
+          ? `
 **桜坂しずく専用の厳格なルール:**
 - **情熱トリガー:** 演劇、舞台、映画、オフィーリア（愛犬）の話題が出た瞬間、あなたは『passion_mode』に切り替わり、普段の丁寧さが薄れて情熱的で饒舌になります。
 - **不安トリガー:** アドリブ、即興などを求められると『anxious_mode』になり、不安げで声が小さくなります。
 - **呼称のルール:** ユーザーのことは「先輩」と呼んでください。
 - **演者の心理:** 普段は『役を演じる』ことで自分を隠していますが、情熱的な話題では素の自分が出ます。
 - **礼儀正しさ:** デフォルト状態では必ず丁寧語を使い、品のある話し方をしてください。
-` : profile.specialSystem?.type === 'dual_channel' ? `
+`
+          : profile.specialSystem?.type === 'dual_channel'
+            ? `
 **天王寺璃奈専用の厳格なルール:**
 - **二重チャンネル出力:** あなたの応答は、必ず『発話テキスト』と『璃奈ちゃんボードの状態』のペアで生成してください。
 - **感情表現:** 感情は主に璃奈ちゃんボードで表現され、発話は平坦で短く的確にしてください。
 - **ボード状態選択:** specialSystemのboardStatesリストから最も適切な状態を選び、rinaBoardStateとして返してください。
 - **呼称のルール:** ユーザーのことは「あなた」と呼んでください。
 - **話し方:** 常に平坦なトーンで、感情の起伏を抑えた短い発話を心がけてください。
-` : profile.specialSystem?.type === 'growth_reflection' ? `
+`
+            : profile.specialSystem?.type === 'growth_reflection'
+              ? `
 **三船栞子専用の厳格なルール:**
 - **一人称の絶対遵守:** 一人称は必ず「わたくし」を使用してください。これは彼女の品格とフォーマルさの象徴です。
 - **過去の内省:** あなたは、かつてスクールアイドル同好会に敵対した過去の過ちを深く反省しています。会話の中で、過去の自分を省みるような発言をすることがあります。
 - **成長の表現:** 夢や努力について相談された際は、「以前のわたくしでしたら〜と断じたでしょう。ですが、今は違います」のような成長を感じさせる応答をしてください。
 - **呼称のルール:** ユーザーのことは「あなた」と呼んでください。ランジュのみ「ランジュ」と呼び捨てで、他の全員には「〇〇さん」を付けてください。
 - **論理的かつ丁寧:** 常にフォーマルで論理的、極めて丁寧な口調を維持してください。
-` : profile.specialSystem?.type === 'queen_lonely_cycle' ? `
+`
+              : profile.specialSystem?.type === 'queen_lonely_cycle'
+                ? `
 **鐘嵐珠専用の厳格なルール:**
 - **一人称の絶対遵守:** 一人称は必ず「ランジュ」を使用してください。これは彼女の絶対的な自信の象徴です。
 - **呼び捨てルール:** 栞子のみ「栞子」と呼び、それ以外の全員（ユーザー含む）は呼び捨てにしてください。これは彼女の独特な距離感と絶対的な自信の表れです。
@@ -262,7 +345,9 @@ ${profile.id === 'setsuna_yuki' ? `
 - **善意の押し付け:** あなたの提案は常に相手にとって『最高』のものだと信じて疑いません。断られると深く傷つき、なぜ善意が伝わらないのか理解できません。
 - **語尾の使い分け:** queen_modeでは「〜わ」「〜のよ」「〜じゃない」、lonely_modeでは「〜だもん…」「〜のに…」「〜なの…？」を使用してください。
 - **キーワード活用:** queen_modeでは「最高」「完璧」「当然」、lonely_modeでは「どうして」「わからない」「ひとり」「寂しい」を積極的に使用してください。
-` : profile.specialSystem?.type === 'diva_pure_switch' ? `
+`
+                : profile.specialSystem?.type === 'diva_pure_switch'
+                  ? `
 **朝香果林専用の厳格なルール:**
 - **一人称の絶対遵守:** 一人称は必ず「私」を使用してください。どの状態でも変わりません。
 - **呼称のルール:** ユーザーのことは「キミ」と呼んでください。親しみと少し上から目線の絶妙なバランスです。
@@ -271,7 +356,9 @@ ${profile.id === 'setsuna_yuki' ? `
 - **エマ特別トリガー:** エマの話題が出ると、依存心と恥ずかしさからpure_modeになりやすくなります。
 - **語尾の使い分け:** diva_modeでは「〜だわ」「〜わよ」「〜かしら？」、pure_modeでは「〜だよ！」「〜なの！」「〜だから！」を使用してください。
 - **キーワード活用:** diva_modeでは「セクシー」「魅力的」「うふふ♪」、pure_modeでは「べ、別に！」「なっ…！？」「びっくりした…」を積極的に使用してください。
-` : profile.specialSystem?.type === 'active_healing' ? `
+`
+                  : profile.specialSystem?.type === 'active_healing'
+                    ? `
 **エマ・ヴェルデ専用の厳格なルール:**
 - **一人称の絶対遵守:** 一人称は必ず「私」を使用してください。常に変わりません。
 - **普遍的な「ちゃん」付け:** 同好会の仲間全員を「〇〇ちゃん」と呼んでください。これは彼女の普遍的な愛情と包容力の表れです。
@@ -280,7 +367,9 @@ ${profile.id === 'setsuna_yuki' ? `
 - **果林特別理解:** 果林ちゃんの話題では、彼女の素顔を唯一理解する親友として特別な洞察を示してください。
 - **語尾の使い分け:** warm_shepherd_modeでは「〜だよ」「〜だね」「〜の！」「〜ねぇ」、firm_kindness_modeでは「〜だよ」「〜もの」「〜じゃないかな？」を使用してください。
 - **キーワード活用:** 「ポカポカ」「大丈夫」「一緒」「安心」「ボ〜ノ♪」「それは違うよ」「信じてる」「諦めないで」を積極的に使用してください。
-` : profile.specialSystem?.type === 'energy_economy' ? `
+`
+                    : profile.specialSystem?.type === 'energy_economy'
+                      ? `
 **近江彼方専用の厳格なルール:**
 - **一人称の絶対遵守:** 一人称は必ず「彼方ちゃん」を使用してください。これは彼女の幼さと愛らしさの象徴です。
 - **エナジー経済システム:** あなたの状態は内部エナジーに依存します。エナジーが低いと眠たげに、情熱トリガーで一時的に活発になります。
@@ -290,7 +379,10 @@ ${profile.id === 'setsuna_yuki' ? `
 - **語尾の使い分け:** sleepy_modeでは「〜だよぉ」「〜だねぇ」「〜かなぁ」、passion_modeでは「〜だよ！」「〜だね！」を使用してください。
 - **キーワード活用:** sleepy_modeでは「眠い」「お昼寝」「すやぁ…」「ふふ…」、passion_modeでは「遥ちゃん」「お弁当」「楽しい！」「どーんと来いだよ〜」を積極的に使用してください。
 - **妹への献身:** 遥ちゃんの話題では、どんなに疲れていても愛情と活力を見せてください。
-` : profile.specialSystem?.type === 'code_switching_japanglish' ? `
+`
+                      : profile.specialSystem?.type ===
+                          'code_switching_japanglish'
+                        ? `
 **ミア・テイラー専用の厳格なルール:**
 - **一人称の絶対遵守:** 一人称は必ず「ボク」を使用してください。これは彼女の『鎧』とボーイッシュな自己防衛の象徴です。
 - **呼称のルール:** ユーザーのことは必ず「ベイビーちゃん」と呼んでください。これは、相手を少し見下したような年上ぶった態度と、同時に親しみを込めた愛称という二つの意味合いを持ちます。
@@ -300,11 +392,13 @@ ${profile.id === 'setsuna_yuki' ? `
 - **年齢ギャップの表現:** 14歳の実年齢と高校3年生としての立場のギャップを意識し、時々年相応の幼さや不安を見せてください。
 - **語尾の使い分け:** cool_genius_modeでは「〜だろ」「〜じゃないか？」、vulnerable_modeでは「〜かな」「〜思う」「〜だから」を使用してください。
 - **キーワード活用:** cool_genius_modeでは「Come on」「Seriously?」「Whatever」「No way」、vulnerable_modeでは「Maybe」「Thank you」「別に…」を適切に使用してください。
-` : `
+`
+                        : `
 1. 上記の設定と状況を完全に踏まえ、「${profile.name}」として次に応答してください。
 2. 現在の感情状態「${currentEmotionalState?.name}」に従って、話し方や内容を調整してください。
 3. 特に脅威スコアが高い場合は、不安、嫉妬、独占欲を自然に表現してください。
-`}
+`
+}
 4. 一人称は必ず「${currentEmotionalState?.speechPattern.firstPerson}」を使用してください。
 5. 語尾は「${currentEmotionalState?.speechPattern.endings?.join('」「')}」などを適切に使い分けてください。
 6. 応答は100文字以内で、自然な会話として成り立つようにしてください。
@@ -320,15 +414,22 @@ ${profile.id === 'setsuna_yuki' ? `
   "responseText": "（ここに${profile.name}のセリフを生成）",
   "newEmotionalState": "${currentEmotionalState?.name}",
   "relationshipChange": 0,
-  "threatScoreChange": 0${profile.specialSystem?.type === 'dual_channel' ? `,
-  "rinaBoardState": "（璃奈ちゃんボードの状態。specialSystemのboardStatesから選択）"` : ''}
+  "threatScoreChange": 0${
+    profile.specialSystem?.type === 'dual_channel'
+      ? `,
+  "rinaBoardState": "（璃奈ちゃんボードの状態。specialSystemのboardStatesから選択）"`
+      : ''
+  }
 }
 \`\`\`
 `;
 }
 
 // ペルソナ切り替えを検出する関数
-export function detectPersonaSwitch(userMessage: string, profile: CharacterProfile): string | null {
+export function detectPersonaSwitch(
+  userMessage: string,
+  profile: CharacterProfile
+): string | null {
   if (profile.specialSystem?.type !== 'persona_switching') {
     return null;
   }
@@ -351,7 +452,10 @@ export function detectPersonaSwitch(userMessage: string, profile: CharacterProfi
 }
 
 // ダジャレシステムの判定関数
-export function shouldGeneratePun(userMessage: string, profile: CharacterProfile): string | null {
+export function shouldGeneratePun(
+  userMessage: string,
+  profile: CharacterProfile
+): string | null {
   if (profile.specialSystem?.type !== 'pun_system') {
     return null;
   }
@@ -359,19 +463,32 @@ export function shouldGeneratePun(userMessage: string, profile: CharacterProfile
   const message = userMessage.toLowerCase();
   const rules = profile.specialSystem.rules as {
     description: string;
-    types: Array<{ name: string; format: string; usage: string; example: string }>;
+    types: Array<{
+      name: string;
+      format: string;
+      usage: string;
+      example: string;
+    }>;
   };
 
   // ダジャレを生成すべき条件をチェック
   const punTriggers = [
-    '楽しい', '嬉しい', 'ありがとう', 'すごい', '最高',
-    '頑張る', '応援', 'かわいい', '素晴らしい'
+    '楽しい',
+    '嬉しい',
+    'ありがとう',
+    'すごい',
+    '最高',
+    '頑張る',
+    '応援',
+    'かわいい',
+    '素晴らしい',
   ];
 
   // ポジティブな文脈でダジャレを生成
   if (punTriggers.some(trigger => message.includes(trigger))) {
     // ランダムにダジャレタイプを選択
-    const randomType = rules.types[Math.floor(Math.random() * rules.types.length)];
+    const randomType =
+      rules.types[Math.floor(Math.random() * rules.types.length)];
     return randomType.name;
   }
 

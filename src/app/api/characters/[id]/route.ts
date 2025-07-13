@@ -13,18 +13,18 @@ import { kanataProfile } from '@/data/characters/kanata_konoe';
 import { miaProfile } from '@/data/characters/mia_taylor';
 
 const characterProfiles = {
-  'ayumu_uehara': ayumuProfile,
-  'setsuna_yuki': setsunaProfile,
-  'ai_miyashita': aiProfile,
-  'kasumi_nakasu': kasumiProfile,
-  'shizuku_osaka': shizukuProfile,
-  'rina_tennoji': rinaProfile,
-  'shioriko_mifune': shiorikoProfile,
-  'lanzhu_zhong': lanzhuProfile,
-  'karin_asaka': karinProfile,
-  'emma_verde': emmaProfile,
-  'kanata_konoe': kanataProfile,
-  'mia_taylor': miaProfile,
+  ayumu_uehara: ayumuProfile,
+  setsuna_yuki: setsunaProfile,
+  ai_miyashita: aiProfile,
+  kasumi_nakasu: kasumiProfile,
+  shizuku_osaka: shizukuProfile,
+  rina_tennoji: rinaProfile,
+  shioriko_mifune: shiorikoProfile,
+  lanzhu_zhong: lanzhuProfile,
+  karin_asaka: karinProfile,
+  emma_verde: emmaProfile,
+  kanata_konoe: kanataProfile,
+  mia_taylor: miaProfile,
 };
 
 export async function GET(
@@ -34,13 +34,10 @@ export async function GET(
   const { id } = await params;
 
   const profile = characterProfiles[id as keyof typeof characterProfiles];
-  
+
   if (profile) {
     return NextResponse.json(profile);
   }
 
-  return NextResponse.json(
-    { error: 'Character not found' },
-    { status: 404 }
-  );
+  return NextResponse.json({ error: 'Character not found' }, { status: 404 });
 }
