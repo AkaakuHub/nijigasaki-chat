@@ -5,6 +5,7 @@ import { useGameStore } from '@/store/game-store';
 import MessageBubble from './MessageBubble';
 import CharacterAvatar from './CharacterAvatar';
 import CharacterSelector from './CharacterSelector';
+import GameStateNotification from './GameStateNotification';
 import { Message } from '@/types/character';
 
 const characterNames: Record<string, string> = {
@@ -25,6 +26,7 @@ const characterNames: Record<string, string> = {
 export default function ChatWindow() {
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [gameStateVisible, setGameStateVisible] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -38,6 +40,7 @@ export default function ChatWindow() {
   } = useGameStore();
 
   const currentCharacterState = characterStates[currentCharacterId];
+  const currentRelationship = currentCharacterState.relationshipLevel || 50;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -109,6 +112,14 @@ export default function ChatWindow() {
       // 関係性パラメータを更新
       if (data.relationshipChange) {
         updateRelationshipLevel(currentCharacterId, data.relationshipChange);
+        const newRelationship =
+          (currentCharacterState.relationshipLevel || 50) +
+          data.relationshipChange;
+
+        // ゲーム状態通知の表示判定
+        if (newRelationship <= 0 || newRelationship >= 100) {
+          setGameStateVisible(true);
+        }
       }
 
       // 脅威スコアを更新（全キャラクター対応）
@@ -329,6 +340,15 @@ export default function ChatWindow() {
         )}
         <div ref={messagesEndRef} />
       </div>
+
+      {/* ゲーム状態通知 */}
+      {gameStateVisible && (
+        <GameStateNotification
+          relationshipLevel={currentRelationship}
+          characterName={characterNames[currentCharacterId] || 'Unknown'}
+          onClose={() => setGameStateVisible(false)}
+        />
+      )}
 
       {/* 入力エリア */}
       <div className="bg-card border-t border-border p-4">
